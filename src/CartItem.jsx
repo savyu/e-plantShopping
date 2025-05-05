@@ -10,17 +10,36 @@ const CartItem = ({ onContinueShopping }) => {
   // Calculate total amount for all products in the cart
   const calculateTotalAmount = () => {
     let total = 0;
-        cart.array.forEach(element => {
-            total+=parseFloat(element.quantity.substring(1)) * parseFloat(element.cost.substring(1));
-        });
+
+    cart.forEach((element) => {
+        // Check if element has the required properties
+        if (element.quantity && element.cost) {
+            console.log(typeof element.cost);
+            console.log('element cost', element.cost);
+            console.log('length', element.cost.length);
+            console.log('element.cost.substring(1)', element.cost.substring(1));
+            const cost = parseFloat(element.cost.substring(1)); // Remove currency symbol
+            const quantity = element.quantity; // Ensure quantity is a number
+
+            // Check for NaN values
+            if (!isNaN(cost) && !isNaN(quantity)) {
+                total += quantity * cost;
+            } else {
+                console.error(`Invalid cost or quantity for element:`, element);
+            }
+        } else {
+            console.error(`Element is missing quantity or cost:`, element);
+        }
+    });
+
     return total;
-  };
+};
 
   const handleCheckoutShopping = (e) => {
     alert('Functionality to be added for future reference');
   };
   const handleContinueShopping = (e) => {
-   
+   onContinueShopping(e);
   };
 
 
@@ -39,12 +58,16 @@ const CartItem = ({ onContinueShopping }) => {
   };
 
   const handleRemove = (item) => {
+    console.log('deleting: ', item);
+    dispatch(removeItem(item));
   };
 
   // Calculate total cost based on quantity for an item
   const calculateTotalCost = (item) => {
-    const itemCost = parseFloat(item.cost.substring(1)) * parseFloat(item.quantity.substring(1));
-  };
+    console.log('calculate item cost', item.cost, item);
+    const itemCost = parseFloat(item.cost.substring(1)) * item.quantity;
+    return itemCost;
+};
 
   return (
     <div className="cart-container">
